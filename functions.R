@@ -18,11 +18,14 @@ read_one_spike_train_file = function(fname, zipfile = "data.zip"
 }
 
 
-plot_acf = function(d, lag.max = 100, ...){
+plot_acf = function(d, lag.max = 400, ...){
     # Drop the first observation that has ACF 1.
     a = acf(d$spike, lag.max = lag.max, plot = FALSE)
     a = a$acf[-1]
-    plot(a
+	x = seq_along(a)
+	x = c(rev(-x), 0, x)
+	y = c(rev(a), 0, a)
+    plot(x, y
         , type = "l"
         , xlab = "lag"
         , ylab = "autocorrelation"
@@ -139,3 +142,15 @@ acf_clim = function (x, ci = 0.95, type = "h", xlab = "Lag", ylab = NULL,
     clim
 }
 
+
+# From http://www.di.fc.ul.pt/~jpn/r/fourier/fourier.html
+plot.frequency.spectrum <- function(X.k, xlimits=c(0,500)) {
+  plot.data  <- cbind(0:(length(X.k)-1), Mod(X.k))
+
+  # TODO: why this scaling is necessary?
+  plot.data[2:length(X.k),2] <- 2*plot.data[2:length(X.k),2] 
+  
+  plot(plot.data, t="h", lwd=2, main="", 
+       xlab="Frequency (Hz)", ylab="Strength", 
+       xlim=xlimits, ylim=c(0,max(Mod(plot.data[,2]))))
+}
