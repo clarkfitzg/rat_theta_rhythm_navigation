@@ -31,8 +31,34 @@ plot_acf = function(d, lag.max = 400, ...){
         , ylab = "autocorrelation"
         , ...
     )
+    a
 }
 
+
+theta_index = function(ac
+    , par = c(a = 1, b = 1, c = 1, omega = 0, tau1 = 1, tau2 = 1)
+    , ...)
+{
+    t = seq_along(ac)
+    fn = function(par){
+        a = par[1]
+        b = par[2]
+        c = par[3]
+        omega = par[4]
+        tau1 = par[5]
+        tau2 = par[6]
+
+        sin_term = a * sin(pi/2 - omega * t)
+        exp1 = exp(-abs(t) / tau1)
+        exp2 = c * exp(-t^2 / tau2)
+        ac_star = (a * sin_term + b) * exp1 + exp2
+        delta = (ac - ac_star)^2
+        sum(delta)
+    }
+    out = optim(par, fn, ...)
+    # TODO: Still need to actually return the a/b part
+    out
+}
 
 
 # What is distinguishable beyond noise?

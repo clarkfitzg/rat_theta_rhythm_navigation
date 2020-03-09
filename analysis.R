@@ -11,13 +11,16 @@ post21 = read_one_spike_train_file("IP21.3-29-17.PostInjection.Standard.Cylinder
 # What could that mean?
 pdf("pre_post_acf.pdf", width = 12, height = 12)
 par(mfrow = c(3, 1))
-plot_acf(PreInjection, main = "IP18.12-9-16.PreInjection")
-plot_acf(PostInjection, main = "IP18.12-9-16.PostInjection")
+ac_pre = plot_acf(PreInjection, main = "IP18.12-9-16.PreInjection")
+ac_post = plot_acf(PostInjection, main = "IP18.12-9-16.PostInjection")
 plot_acf(post21, main = "IP21.3-29-17.PostInjection")
 dev.off()
 
 if(FALSE)
 {
+
+# Trying to fit the Theta index to the autocorrelogram
+theta_index(ac_pre)
 
 # R's default confidence interval lines are at 0.0026 for the pre injection ACF.
 # This means we cannot really detect any autocorrelation at all in the PreInjection data- it's not large enough to distinguish it from noise.
