@@ -35,18 +35,24 @@ plot_acf = function(d, lag.max = 400, ...){
 }
 
 
-theta_index = function(ac
-    , par = c(a = 1, b = 1, c = 1, omega = 0, tau1 = 1, tau2 = 1)
+# Omega determines phase.
+# Jeff said 6-10 Hz is what we're looking for.
+target_hz = 8
+obs_per_sec = 1000
+default_omega = target_hz * 2 * pi * obs_per_sec
+
+optim_theta_index = function(ac
+    , par = c(a = 1, b = 1, c = 1, omega = default_omega, tau1 = 1, tau2 = 1)
     , ...)
 {
     t = seq_along(ac)
     fn = function(par){
-        a = par[1]
-        b = par[2]
-        c = par[3]
-        omega = par[4]
-        tau1 = par[5]
-        tau2 = par[6]
+        a = par["a"]
+        b = par["b"]
+        c = par["c"]
+        omega = par["omega"]
+        tau1 = par["tau1"]
+        tau2 = par["tau2"]
 
         sin_term = a * sin(pi/2 - omega * t)
         exp1 = exp(-abs(t) / tau1)
@@ -56,8 +62,15 @@ theta_index = function(ac
         sum(delta)
     }
     out = optim(par, fn, ...)
-    # TODO: Still need to actually return the a/b part
+    out$hertz = out[["par"]][["omega"]] / (2 * pi * obs_per_sec)
     out
+}
+
+
+theta_index = function(optim_results)
+{
+    p = optim_results[["par"]]
+    p["a"] / p["b"]
 }
 
 

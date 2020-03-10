@@ -20,7 +20,28 @@ if(FALSE)
 {
 
 # Trying to fit the Theta index to the autocorrelogram
-theta_index(ac_pre)
+o_pre = optim_theta_index(ac_pre, control = list(trace = 10, reltol = 1e-10, maxit = 1e4))
+
+te_pre = theta_index(o_pre)
+
+
+o_post = optim_theta_index(ac_post
+, control = list(trace = 10, reltol = 1e-10, maxit = 1e4)
+)
+
+# How robust are these to initial parameters?
+
+o_post2 = optim_theta_index(ac_post, par = c(a = 1, b = 1, c = 0.1, omega = default_omega, tau1 = 10, tau2 = 1)
+, control = list(trace = 10, reltol = 1e-10, maxit = 1e4)
+)
+
+# Some of the parameters differ by orders of magnitude, based on the starting values for the optimization.
+# This means calculating theta_index will be unreliable.
+abs((o_post$par - o_post2$par) / o_post$par)
+
+te_post = theta_index(o_post)
+
+
 
 # R's default confidence interval lines are at 0.0026 for the pre injection ACF.
 # This means we cannot really detect any autocorrelation at all in the PreInjection data- it's not large enough to distinguish it from noise.
