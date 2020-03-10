@@ -37,10 +37,13 @@ o_post2 = optim_theta_index(ac_post, par = c(a = 1, b = 1, c = 0.1, omega = defa
 
 # Some of the parameters differ by orders of magnitude, based on the starting values for the optimization.
 # This means calculating theta_index will be unreliable.
-abs((o_post$par - o_post2$par) / o_post$par)
+rel_diff(o_post$par, o_post2$par)
 
-te_post = theta_index(o_post)
+theta_index(o_post)
+theta_index(o_post2)
 
+# These values are quite different compared to the relative tolerance used in the numerical minimzation of 1e-10, which probably means I'm not truly finding the global minimum to this function.
+rel_diff(o_post$value, o_post2$value)
 
 
 # R's default confidence interval lines are at 0.0026 for the pre injection ACF.

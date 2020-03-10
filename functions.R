@@ -1,3 +1,6 @@
+rel_diff = function(reference, other) abs((reference - other) / reference)
+
+
 # Read a single spike train file from a zip file that contains many such files.
 read_one_spike_train_file = function(fname, zipfile = "data.zip"
     , col.names = c("index", "time", "spike"), ...)
