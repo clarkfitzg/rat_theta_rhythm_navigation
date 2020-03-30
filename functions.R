@@ -5,7 +5,7 @@ rel_diff = function(reference, other) abs((reference - other) / reference)
 read_one_spike_train_file = function(fname, zipfile = "data.zip"
     , col.names = c("index", "time", "spike"), ...)
 {
-    f = unz("data.zip", fname)
+    f = unz(zipfile, fname)
     d = read.table(f, header = FALSE, col.names = col.names, ...)
     
     time_deltas = table(diff(d$time))
@@ -21,7 +21,8 @@ read_one_spike_train_file = function(fname, zipfile = "data.zip"
 }
 
 
-plot_acf = function(d, lag.max = 400, ...){
+plot_acf = function(d, lag.max = 400, ...)
+{
     # Drop the first observation that has ACF 1.
     a = acf(d$spike, lag.max = lag.max, plot = FALSE)
     a = a$acf[-1]
@@ -35,6 +36,16 @@ plot_acf = function(d, lag.max = 400, ...){
         , ...
     )
     a
+}
+
+
+plot_acf_pair = function(file_pre, file_post, zipfile = "data.zip", ...)
+{
+    d_pre = read_one_spike_train_file(file_pre, zipfile)
+    d_post = read_one_spike_train_file(file_post, zipfile)
+    plot_acf(d_pre, main = "Pre Injection", sub = file_pre, ...)
+    plot_acf(d_post, main = "Post Injection", sub = file_post, ...)
+    list(pre = d_pre, post = d_post)
 }
 
 
