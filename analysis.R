@@ -54,5 +54,8 @@ acf_clim(a)
 f = fft(PreInjection$spike)
 plot.frequency.spectrum(f, xlimits = c(0, 40))
 
+# This article suggests that standard Fourier spectrum works fine with enough data.
+# https://www.tandfonline.com/doi/abs/10.1076/0929-1016(200010)31%3A4%3B1-2%3BFT481
 spectrum(PreInjection$spike)
+
 }

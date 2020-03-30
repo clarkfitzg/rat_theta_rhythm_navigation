@@ -1,6 +1,5 @@
 source("functions.R")
 
-par(mfrow = c(2, 1))
 
 plot_acf_pair(file_pre = "IP21.5-30-17.PreInjection.Standard.Cylinder.2017-05-30_16-07-11.SE9.nse.converted.SpikeSortedForAutocorrelation"
               , file_post = "IP21.5-30-17.PostInjection.Standard.Cylinder.2017-05-30_18-30-23.SE9.nse.converted.SpikeSortedForAutocorrelation"

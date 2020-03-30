@@ -41,8 +41,11 @@ plot_acf = function(d, lag.max = 400, ...)
 
 plot_acf_pair = function(file_pre, file_post, zipfile = "data.zip", ...)
 {
+
     d_pre = read_one_spike_train_file(file_pre, zipfile)
     d_post = read_one_spike_train_file(file_post, zipfile)
+
+par(mfrow = c(2, 1))
     plot_acf(d_pre, main = "Pre Injection", sub = file_pre, ...)
     plot_acf(d_post, main = "Post Injection", sub = file_post, ...)
     list(pre = d_pre, post = d_post)
