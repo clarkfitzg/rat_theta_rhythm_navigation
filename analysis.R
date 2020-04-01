@@ -58,4 +58,25 @@ plot.frequency.spectrum(f, xlimits = c(0, 40))
 # https://www.tandfonline.com/doi/abs/10.1076/0929-1016(200010)31%3A4%3B1-2%3BFT481
 spectrum(PreInjection$spike)
 
+
+# The drug has cut the number of spikes down, about in half.
+
+mean(PreInjection$spike)
+# [1] 0.00357698
+mean(PostInjection$spike)
+# [1] 0.001930448
+
+# With these numbers the highest possible frequency can be:
+1000 * mean(PreInjection$spike)
+# 3.58 hz
+
+# Let's plot the indices of the spikes.
+plot(which(as.logical(PreInjection$spike)))
+# post21 has pronounced stair pattern, which means that the cell often does not fire for long periods of time, between 20k to 25k intervals, which is 20 to 25 seconds.
+
+# PostInjection also has this stair pattern, with around 20k to 55k intervals.
+
+# If there is a rhythm, then this plot will be approximately linear.
+
+
 }
