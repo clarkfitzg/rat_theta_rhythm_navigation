@@ -28,11 +28,12 @@ signal[spike_locations] = 1
 
 x = signal
 
-# The ones are so sparse I'm not going to worry about converting those to 0's
 if(FALSE){
 
-noise = sample.int(n, size = signal_noise_ratio * total_ones)
-x[noise] = 1
+p_noise = signal_noise_ratio * hz / obs_per_second
+noise_locations = sample(c(TRUE, FALSE), size = total_obs, replace = TRUE, prob = c(p_noise, 1 - p_noise))
+x = abs(x - noise_locations)
+
 }
 
 a = acf(x, lag.max = 400, plot = FALSE)
