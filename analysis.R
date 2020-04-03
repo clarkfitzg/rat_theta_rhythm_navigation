@@ -16,6 +16,11 @@ ac_post = plot_acf(PostInjection, main = "IP18.12-9-16.PostInjection")
 ac_post21 = plot_acf(post21, main = "IP21.3-29-17.PostInjection")
 dev.off()
 
+theta_index(ac_pre)
+theta_index(ac_post)
+theta_index(ac_post21)
+
+
 if(FALSE)
 {
 

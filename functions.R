@@ -23,11 +23,25 @@ read_one_spike_train_file = function(fname, zipfile = "data.zip"
 }
 
 
-plot_acf = function(d, lag.max = 400, ...)
+acf_from_spike_file = function(d, lag.max = 800)
+{
+    a = acf(d$spike, lag.max = lag.max, plot = FALSE)
+    a$acf[-1]
+}
+
+
+file_name_and_theta_index = function(fname, ...)
+{
+    s = read_one_spike_train_file(fname, ...)
+    a = acf_from_spike_file(s)
+    ti = theta_index(a)
+    data.frame(file = fname, theta_index = ti)
+}
+
+
+plot_acf = function(d, a = acf_from_spike_file(d), ...)
 {
     # Drop the first observation that has ACF 1.
-    a = acf(d$spike, lag.max = lag.max, plot = FALSE)
-    a = a$acf[-1]
 	x = seq_along(a)
 	x = c(rev(-x), 0, x)
 	y = c(rev(a), 0, a)
@@ -62,13 +76,14 @@ plot_spike_locs = function(d, ...)
 
 
 
-# The theta index should be low if there's no periodic signal.
+# The theta index should be small if there's no periodic signal.
 # @param ac autocorrelation
 # @param drop_first The first few observations have negative or lower autocorrelation, because cells can't fire consecutively. Drop these so they don't interfere with the fitting
-theta_index = function(ac, tau1_range = c(0, 1), tau2_range = c(0, 1)
+theta_index = function(ac, tau1_range = c(0, 1e3), tau2_range = c(0, 1e5)
         , obs_per_sec = 1000, target_hz = 8, omega_range = c(0.1, 10) * target_hz * 2 * pi / obs_per_sec
         , drop_first = 20
 ){
+    ac = ac[-seq(drop_first)]
     time = seq_along(ac)
 
     fa = function(omega){
@@ -97,9 +112,13 @@ theta_index = function(ac, tau1_range = c(0, 1), tau2_range = c(0, 1)
     aterm = sin(pi/2 - omega*time) * bterm
     cterm = exp(-time^2 / tau2)
 
-    fit = lm(ac ~ aterm + bterm + cterm)
-    stop()
+    # Take out the intercept to be consistent with Tsanov.
+    fit = lm(ac ~ 0 + aterm + bterm + cterm)
+    cf = coef(fit)
+    # Take the absolute value because there's nothing preventing the a term from being negative, and the b term may also be negative depending on what c does.
+    abs(cf["aterm"] / cf["bterm"])
 }
+
 
 optim_theta_index = function(ac
     , par = c(a = 1, b = 1, c = 1, omega = default_omega, tau1 = 1, tau2 = 1)
