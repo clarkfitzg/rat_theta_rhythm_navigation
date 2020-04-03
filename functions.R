@@ -1,3 +1,5 @@
+
+
 rel_diff = function(reference, other) abs((reference - other) / reference)
 
 
@@ -58,11 +60,25 @@ plot_spike_locs = function(d, ...)
 }
 
 
-# Omega determines phase.
-# Jeff said 6-10 Hz is what we're looking for.
-target_hz = 8
-obs_per_sec = 1000
-default_omega = target_hz * 2 * pi * obs_per_sec
+
+
+# The theta index should be low if there's no periodic signal.
+# @param ac autocorrelation
+theta_index = function(ac, tau1_range = c(0, 100), tau2_initial = 1
+        , obs_per_sec = 1000, target_hz = 8, omega_range = c(0.1, 10) * target_hz * 2 * pi / obs_per_sec
+){
+    time = seq_along(ac)
+
+    fb = function(tau1){
+        bterm = exp(-time / tau1)
+        fit = lm(ac ~ bterm)
+        sum(residuals(fit)^2)
+    }
+    tau1 = optimize(tau1_range, fb)$objective
+    bterm = exp(-time / tau1)
+    stop()
+
+}
 
 optim_theta_index = function(ac
     , par = c(a = 1, b = 1, c = 1, omega = default_omega, tau1 = 1, tau2 = 1)
@@ -90,7 +106,7 @@ optim_theta_index = function(ac
 }
 
 
-theta_index = function(optim_results)
+theta_index_optim = function(optim_results)
 {
     p = optim_results[["par"]]
     p["a"] / p["b"]
