@@ -6,7 +6,7 @@ set.seed(3480)
 
 minutes = 8
 obs_per_second = 1000
-hz = 6
+hz = 8
 add_random_noise = TRUE
 frac_signal_to_keep = 0.9
 
@@ -59,6 +59,6 @@ spectrum(x, spans = 1001, main = "1001")
 
 # We can definitely observe this signal in the plot of the spectrum.
 recovered = obs_per_second * s$freq[which.max(s$spec)]
-# And we can approximately recover the original signal.
+# And we can approximately recover the frequency of the original signal.
 
 }

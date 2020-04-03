@@ -77,6 +77,8 @@ plot(which(as.logical(PreInjection$spike)))
 # PostInjection also has this stair pattern, with around 20k to 55k intervals.
 
 # If there is a rhythm, then this plot will be approximately linear.
+# If the plot is not linear, then there cannot be a rhythm.
 
+s = spectrum(PreInjection$spike, spans = 201)
 
 }
