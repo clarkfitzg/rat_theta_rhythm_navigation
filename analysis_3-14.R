@@ -20,6 +20,15 @@ d3 = plot_acf_pair(file_pre = "IP25.02-06-18.IP25.Preinjection.Standard.SE5.2018
 )
 dev.off()
 
+pdf("IP18.12-9-16.pdf", width = 12, height = 12)
+d3 = plot_acf_pair(file_pre = "IP18.12-9-16.PreInjection.Standard.Cylinder.2016-12-09_14-31-21.SE9.nse.converted.SpikeSortedForAutocorrelation"
+              , file_post = "IP18.12-9-16.PostInjection.Standard.Cylinder.2016-12-09_19-18-01.SE15.nse.converted.SpikeSortedForAutocorrelation"
+    , plot_func = plot_spike_locs
+    , ylab = "spike index locations"
+)
+dev.off()
+
+
 # Not seeing any signal in the spectrum for any of these.
 # The only thing I see is a spike at 0, which is probably caused by the cells not firing twice in a row.
 s = spectrum(d3$pre$spike, spans = 201)
