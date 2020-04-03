@@ -64,20 +64,41 @@ plot_spike_locs = function(d, ...)
 
 # The theta index should be low if there's no periodic signal.
 # @param ac autocorrelation
-theta_index = function(ac, tau1_range = c(0, 100), tau2_initial = 1
+# @param drop_first The first few observations have negative or lower autocorrelation, because cells can't fire consecutively. Drop these so they don't interfere with the fitting
+theta_index = function(ac, tau1_range = c(0, 1), tau2_range = c(0, 1)
         , obs_per_sec = 1000, target_hz = 8, omega_range = c(0.1, 10) * target_hz * 2 * pi / obs_per_sec
+        , drop_first = 20
 ){
     time = seq_along(ac)
+
+    fa = function(omega){
+        aterm = sin(pi/2 - omega*time)
+        fit = lm(ac ~ aterm)
+        sum(residuals(fit)^2)
+    }
 
     fb = function(tau1){
         bterm = exp(-time / tau1)
         fit = lm(ac ~ bterm)
         sum(residuals(fit)^2)
     }
-    tau1 = optimize(tau1_range, fb)$objective
-    bterm = exp(-time / tau1)
-    stop()
 
+    fc = function(tau2){
+        cterm = exp(-time^2 / tau2)
+        fit = lm(ac ~ cterm)
+        sum(residuals(fit)^2)
+    }
+
+    omega = optimize(fa, omega_range)$minimum
+    tau1 = optimize(fb, tau1_range)$minimum
+    tau2 = optimize(fc, tau2_range)$minimum
+
+    bterm = exp(-time / tau1)
+    aterm = sin(pi/2 - omega*time) * bterm
+    cterm = exp(-time^2 / tau2)
+
+    fit = lm(ac ~ aterm + bterm + cterm)
+    stop()
 }
 
 optim_theta_index = function(ac

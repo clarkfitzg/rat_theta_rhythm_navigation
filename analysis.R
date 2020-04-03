@@ -13,7 +13,7 @@ pdf("pre_post_acf.pdf", width = 12, height = 12)
 par(mfrow = c(3, 1))
 ac_pre = plot_acf(PreInjection, main = "IP18.12-9-16.PreInjection")
 ac_post = plot_acf(PostInjection, main = "IP18.12-9-16.PostInjection")
-plot_acf(post21, main = "IP21.3-29-17.PostInjection")
+ac_post21 = plot_acf(post21, main = "IP21.3-29-17.PostInjection")
 dev.off()
 
 if(FALSE)
@@ -80,5 +80,6 @@ plot(which(as.logical(PreInjection$spike)))
 # If the plot is not linear, then there cannot be a rhythm.
 
 s = spectrum(PreInjection$spike, spans = 201)
+
 
 }
