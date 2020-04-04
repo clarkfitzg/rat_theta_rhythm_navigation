@@ -31,6 +31,8 @@ dev.off()
 
 # Not seeing any signal in the spectrum for any of these.
 # The only thing I see is a spike at 0, which is probably caused by the cells not firing twice in a row.
+pdf("IP25_pre_spectrum.pdf")
 s = spectrum(d3$pre$spike, spans = 201)
+dev.off()
 
 

@@ -43,7 +43,6 @@ if(FALSE){
 
 a = acf(x, lag.max = 400, plot = FALSE)
 a = a$acf[-1]
-plot(a, type = "l")
 
 plot(which(as.logical(x)))
 
@@ -51,7 +50,11 @@ spectrum(x, spans = 7, main = "7")
 
 spectrum(x, spans = 51, main = "51")
 
+pdf("spectrum_and_acf_with_signal.pdf")
+par(mfrow = c(2, 1))
+plot(a, type = "l")
 spectrum(x, spans = 201, main = "201")
+dev.off()
 
 s = spectrum(x, spans = 501, main = "501")
 
