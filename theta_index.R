@@ -21,12 +21,24 @@
 # Parameters
 ############################################################
 
+# The frequency we're most interested in.
+TARGET_HZ = 8
+# The ranges of frequencies that we'll consider.
+HZ_RANGE = TARGET_HZ * c(0.1, 10)
+
 # The largest lag for the autocorrelation.
 LAG = 800
 
 # Degree of smoothness of the periodogram, see examples in spectrum()
 # Larger is more smooth.
 SPANS = 201
+
+# The number of observations per second
+OBS_PER_SECOND = 1000
+
+# The autocorrelation for small lags is low or negative because neurons can't fire right after one another.
+# Drop these.
+DROP_FIRST = 20
 
 # Height and width of the pdf plots produced.
 PDF_HEIGHT = 12
@@ -48,9 +60,11 @@ main = function()
 {
     args = commandArgs(trailingOnly = TRUE)
     if(length(args) == 0){
-        stop("No data directory specified. Usage:
+        stop("No data directory specified.
              
-    Rscript theta_index.R data_directory")
+Expected usage:
+             
+    Rscript theta_index.R data_directory\n\n")
     }
 
     data_directory = args[1]
@@ -77,23 +91,23 @@ process_one_file = function(fname, ...)
     # Plotting
     pdf(paste0(bfname, PLOTFILE_SUFFIX), height = PDF_HEIGHT, width = PDF_WIDTH)
     par(mfrow = c(2, 1))
-    plot_acf(a
+    plot_acf(a = a
         , main = paste0("Autocorrelation", bfname)
         , sub = paste0("Theta index = ", bfname)
         )
-    spectrum(main = paste0("Periodogram with spans = ", SPANS))
+    spectrum(s[, "spike"], main = paste0("Periodogram with spans = ", SPANS))
     dev.off()
 
     ti = data.frame(theta_index = ti, file = bfname)
     write.table(ti, file = THETA_INDEX_FILE, append = TRUE
-                , row.names = FALSE, col.names = FALSE)
+                , row.names = FALSE, col.names = FALSE, sep = ",")
 }
 
 
 acf_from_spike_file = function(d, lag.max = LAG)
 {
-    a = acf(d$spike, lag.max = lag.max, plot = FALSE)
-    a$acf[-1]
+    a = acf(d[, "spike"], lag.max = lag.max, plot = FALSE)
+    a[["acf"]][-1]
 }
 
 
@@ -102,7 +116,7 @@ read_one_spike_train_file = function(fname,
 {
     d = read.table(fname, header = FALSE, col.names = col.names, ...)
     
-    time_deltas = table(diff(d$time))
+    time_deltas = table(diff(d[, "time"]))
     if(length(time_deltas) > 1)
         stop("Time intervals are not all the same.")
 
@@ -135,8 +149,9 @@ plot_acf = function(d, a = acf_from_spike_file(d), ...)
 # @param ac autocorrelation
 # @param drop_first The first few observations have negative or lower autocorrelation, because cells can't fire consecutively. Drop these so they don't interfere with the fitting
 theta_index = function(ac, tau1_range = c(0, 1e3), tau2_range = c(0, 1e5)
-        , obs_per_sec = 1000, target_hz = 8, omega_range = c(0.1, 10) * target_hz * 2 * pi / obs_per_sec
-        , drop_first = 20
+        , obs_per_sec = OBS_PER_SECOND
+        , omega_range = HZ_RANGE * 2 * pi / obs_per_sec
+        , drop_first = DROP_FIRST
 ){
     ac = ac[-seq(drop_first)]
     time = seq_along(ac)
@@ -159,9 +174,9 @@ theta_index = function(ac, tau1_range = c(0, 1e3), tau2_range = c(0, 1e5)
         sum(residuals(fit)^2)
     }
 
-    omega = optimize(fa, omega_range)$minimum
-    tau1 = optimize(fb, tau1_range)$minimum
-    tau2 = optimize(fc, tau2_range)$minimum
+    omega = optimize(fa, omega_range)[["minimum"]]
+    tau1 = optimize(fb, tau1_range)[["minimum"]]
+    tau2 = optimize(fc, tau2_range)[["minimum"]]
 
     bterm = exp(-time / tau1)
     aterm = sin(pi/2 - omega*time) * bterm
