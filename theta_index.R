@@ -40,13 +40,14 @@ OBS_PER_SECOND = 1000
 # Drop these.
 DROP_FIRST = 20
 
-# Height and width of the pdf plots produced.
-PDF_HEIGHT = 12
-PDF_WIDTH = 12
+# Height and width in pixels of the png plots produced.
+PNG_HEIGHT = 2000
+PNG_WIDTH = 1200
+FONT_SIZE = 30
 
 # Assume that any file in the data directory with this suffix is a data file.
 DATAFILE_SUFFIX = "SpikeSortedForAutocorrelation"
-PLOTFILE_SUFFIX = "_plot.pdf"
+PLOTFILE_SUFFIX = "_plot.png"
 
 # CSV file to save the actual theta index values
 THETA_INDEX_FILE = "theta_index.csv"
@@ -89,13 +90,14 @@ process_one_file = function(fname, ...)
     bfname = basename(fname)
 
     # Plotting
-    pdf(paste0(bfname, PLOTFILE_SUFFIX), height = PDF_HEIGHT, width = PDF_WIDTH)
+    png(paste0(bfname, PLOTFILE_SUFFIX), height = PNG_HEIGHT, width = PNG_WIDTH
+        , pointsize = FONT_SIZE)
     par(mfrow = c(2, 1))
     plot_acf(a = a
         , main = paste0("Autocorrelation", bfname)
-        , sub = paste0("Theta index = ", bfname)
+        , sub = sprintf("Theta index = %g4", ti)
         )
-    spectrum(s[, "spike"], main = paste0("Periodogram with spans = ", SPANS))
+    spectrum(s[, "spike"], main = paste0("Periodogram with spans = ", SPANS), spans = SPANS)
     dev.off()
 
     ti = data.frame(theta_index = ti, file = bfname)
