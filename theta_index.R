@@ -57,29 +57,6 @@ THETA_INDEX_FILE = "theta_index.csv"
 ############################################################
 
 
-main = function()
-{
-    args = commandArgs(trailingOnly = TRUE)
-    if(length(args) == 0){
-        stop("No data directory specified.
-             
-Expected usage:
-             
-    Rscript theta_index.R data_directory\n\n")
-    }
-
-    data_directory = args[1]
-    files = list.files(data_directory, pattern = paste0("*", DATAFILE_SUFFIX))
-    files = file.path(data_directory, files)
-
-    if(!file.exists(THETA_INDEX_FILE)){
-        writeLines("theta_index,file", THETA_INDEX_FILE)
-    }
-
-    lapply(files, process_one_file)
-}
-
-
 process_one_file = function(fname, ...)
 {
     message("processing ", fname)
@@ -192,7 +169,26 @@ theta_index = function(ac, tau1_range = c(0, 1e3), tau2_range = c(0, 1e5)
 }
 
 
-# Run it!
-if(!interactive()){
-    main()
+main = function(dirname = ".")
+{
+    data_directory = dirname[1]
+    files = list.files(data_directory, pattern = paste0("*", DATAFILE_SUFFIX, "$"))
+    files = file.path(data_directory, files)
+
+    if(!file.exists(THETA_INDEX_FILE)){
+        writeLines("theta_index,file", THETA_INDEX_FILE)
+    }
+
+    lapply(files, process_one_file)
 }
+
+
+# Run it!
+#if(!interactive()){
+    dirname = commandArgs(trailingOnly = TRUE)
+    if(length(dirname) == 0){
+        main()
+    } else {
+        main(dirname)
+    }
+#}
