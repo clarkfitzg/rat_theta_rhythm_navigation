@@ -1,4 +1,4 @@
-# Wed Apr  8 08:37:48 PDT 2020
+# Wed Apr  8 16:25:22 PDT 2020
 # Jeff Calton and Clark Fitzgerald, CSUS
 #
 # This script analyzes neural spike data to determine if the neural activity
