@@ -41,7 +41,7 @@ if(add_random_noise){
 
 if(FALSE){
 
-a = acf(x, lag.max = 400, plot = FALSE)
+a = acf(x, lag.max = 800, plot = FALSE)
 a = a$acf[-1]
 
 plot(which(as.logical(x)))
@@ -50,7 +50,7 @@ spectrum(x, spans = 7, main = "7")
 
 spectrum(x, spans = 51, main = "51")
 
-pdf("spectrum_and_acf_with_signal.pdf")
+png("spectrum_and_acf_with_signal.png", height = 2000, width = 1200)
 par(mfrow = c(2, 1))
 plot(a, type = "l")
 spectrum(x, spans = 201, main = "201")
