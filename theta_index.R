@@ -179,7 +179,7 @@ main = function(dirname = ".")
         writeLines("theta_index,file", THETA_INDEX_FILE)
     }
 
-    lapply(files, process_one_file)
+    lapply(files, function(x) tryCatch(process_one_file(x), error = function(e) message("ERROR processing ", x)))
 }
 
 
