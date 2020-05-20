@@ -163,6 +163,12 @@ theta_index = function(ac, tau1_range = c(0, 1e3), tau2_range = c(0, 1e5)
 
     # Take out the intercept to be consistent with Tsanov.
     fit = lm(ac ~ 0 + aterm + bterm + cterm)
+
+    # The aterm is not significant, even when in a model all by itself.
+    # In other words, we can't tell that a is not 0.
+    #fit = lm(ac ~ aterm)
+
+    print(summary(fit))
     cf = coef(fit)
     # Take the absolute value because there's nothing preventing the a term from being negative, and the b term may also be negative depending on what c does.
     abs(cf["aterm"] / cf["bterm"])
@@ -185,10 +191,12 @@ main = function(dirname = ".")
 
 # Run it!
 #if(!interactive()){
+if(TRUE){
     dirname = commandArgs(trailingOnly = TRUE)
     if(length(dirname) == 0){
         main()
     } else {
         main(dirname)
     }
+}
 #}
