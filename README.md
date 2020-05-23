@@ -16,7 +16,7 @@ First, we visually inspected the autocorrelograms for each data set.
 __Figure 1__ shows the autocorrelograms of the EEG signal in a typical cell, both before and after the drug infusion.
 The autocorrelograms are noisy, and do not show any visually detectable underlying wave structure.
 Second, we computed the theta index score on the autocorrelogram using the method described by Tsanov et al. __TODO: cite appropriately__.
-In this case, the parameter that represents the periodic component in the autocorrelograms was not significantly different from 0, which means that there's no evidence of theta modulation.
+In this case, the parameter that represents the magnitude of the periodic component in the autocorrelograms was not significantly different from 0, which means that there's no evidence of theta modulation.
 Third, we analyzed the spectral density of the signal by examining the periodogram for each data set.
 The periodograms showed no structure indicative of a theta signal.
 Finally, we simulated several noisy signals that contained theta modulation, and verified that all of the above methods were able to detect the theta modulation.
