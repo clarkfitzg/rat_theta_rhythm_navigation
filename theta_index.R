@@ -88,7 +88,7 @@ process_one_file = function(fname, ...)
 
     frequency = OBS_PER_SECOND * sp[["freq"]]
     pdata = data.frame(frequency, spectrum = sp[["spec"]])
-    pdata = pdata[, frequency < MAX_PLOT_HZ]
+    pdata = pdata[frequency < MAX_PLOT_HZ, ]
     write.csv(pdata, file = paste0(bfname, PERIODOGRAM_SUFFIX), row.names = FALSE)
 
     ti = data.frame(theta_index = ti, file = bfname)
