@@ -1,4 +1,6 @@
-# Wed Apr  8 16:25:22 PDT 2020
+# Last modified:
+# Thu Jun 11 16:52:20 PDT 2020
+
 # Jeff Calton and Clark Fitzgerald, CSUS
 #
 # This script analyzes neural spike data to determine if the neural activity
@@ -23,8 +25,9 @@
 
 # The frequency we're most interested in.
 TARGET_HZ = 8
-# The ranges of frequencies that we'll consider.
+# The ranges of frequencies that we'll consider for fitting.
 HZ_RANGE = TARGET_HZ * c(0.1, 10)
+MAX_PLOT_HZ = 50
 
 # The largest lag for the autocorrelation.
 LAG = 800
@@ -48,6 +51,8 @@ FONT_SIZE = 30
 # Assume that any file in the data directory with this suffix is a data file.
 DATAFILE_SUFFIX = "SpikeSortedForAutocorrelation"
 PLOTFILE_SUFFIX = "_plot.png"
+ACF_SUFFIX = "_acf.csv"
+PERIODOGRAM_SUFFIX = "_periodogram.csv"
 
 # CSV file to save the actual theta index values
 THETA_INDEX_FILE = "theta_index.csv"
@@ -74,8 +79,17 @@ process_one_file = function(fname, ...)
         , main = paste0("Autocorrelation", bfname)
         , sub = sprintf("Theta index = %g4", ti)
         )
-    spectrum(s[, "spike"], main = paste0("Periodogram with spans = ", SPANS), spans = SPANS)
+    sp = spectrum(s[, "spike"], main = paste0("Periodogram with spans = ", SPANS), spans = SPANS)
     dev.off()
+
+    # Save ACF and periodogram into CSV files
+    adata = data.frame(lag = seq_along(a), autocorrelation = a)
+    write.csv(adata, file = paste0(bfname, ACF_SUFFIX), row.names = FALSE)
+
+    frequency = OBS_PER_SECOND * sp[["freq"]]
+    pdata = data.frame(frequency, spectrum = sp[["spec"]])
+    pdata = pdata[, frequency < MAX_PLOT_HZ]
+    write.csv(pdata, file = paste0(bfname, PERIODOGRAM_SUFFIX), row.names = FALSE)
 
     ti = data.frame(theta_index = ti, file = bfname)
     write.table(ti, file = THETA_INDEX_FILE, append = TRUE
