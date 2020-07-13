@@ -1,5 +1,5 @@
 # Last modified:
-# Thu Jun 11 16:52:20 PDT 2020
+# Mon Jul 13 14:47:15 PDT 2020
 
 # Jeff Calton and Clark Fitzgerald, CSUS
 #
@@ -66,7 +66,7 @@ process_one_file = function(fname, ...)
 {
     message("processing ", fname)
     s = read_one_spike_train_file(fname, ...)
-    a = acf_from_spike_file(s)
+    a = lag_counts_from_spike_file(s)
     ti = theta_index(a)
 
     bfname = basename(fname)
@@ -75,15 +75,15 @@ process_one_file = function(fname, ...)
     png(paste0(bfname, PLOTFILE_SUFFIX), height = PNG_HEIGHT, width = PNG_WIDTH
         , pointsize = FONT_SIZE)
     par(mfrow = c(2, 1))
-    plot_acf(a = a
-        , main = paste0("Autocorrelation", bfname)
+    plot_lag_counts(a = a
+        , main = paste0("Counts", bfname)
         , sub = sprintf("Theta index = %g4", ti)
         )
     sp = spectrum(s[, "spike"], main = paste0("Periodogram with spans = ", SPANS), spans = SPANS)
     dev.off()
 
     # Save ACF and periodogram into CSV files
-    adata = data.frame(lag = seq_along(a), autocorrelation = a)
+    adata = data.frame(lag = seq_along(a), counts = a)
     write.csv(adata, file = paste0(bfname, ACF_SUFFIX), row.names = FALSE)
 
     frequency = OBS_PER_SECOND * sp[["freq"]]
@@ -97,9 +97,10 @@ process_one_file = function(fname, ...)
 }
 
 
-acf_from_spike_file = function(d, lag.max = LAG)
+lag_counts_from_spike_file = function(d, lag.max = LAG)
 {
-    a = acf(d[, "spike"], lag.max = lag.max, plot = FALSE)
+    s = d[, "spike"]
+    a = acf(s, lag.max = lag.max, plot = FALSE,, type = "covariance", demean = FALSE)
     a[["acf"]][-1]
 }
 
@@ -122,7 +123,7 @@ read_one_spike_train_file = function(fname,
 }
 
 
-plot_acf = function(d, a = acf_from_spike_file(d), ...)
+plot_lag_counts = function(d, a = lag_counts_from_spike_file(d), ...)
 {
     # Drop the first observation that has ACF 1.
 	x = seq_along(a)
@@ -130,8 +131,8 @@ plot_acf = function(d, a = acf_from_spike_file(d), ...)
 	y = c(rev(a), 0, a)
     plot(x, y
         , type = "l"
-        , xlab = "lag"
-        , ylab = "autocorrelation"
+        , xlab = "time (ms)"
+        , ylab = "count"
         , ...
     )
     a
