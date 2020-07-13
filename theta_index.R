@@ -100,8 +100,9 @@ process_one_file = function(fname, ...)
 lag_counts_from_spike_file = function(d, lag.max = LAG)
 {
     s = d[, "spike"]
-    a = acf(s, lag.max = lag.max, plot = FALSE,, type = "covariance", demean = FALSE)
-    a[["acf"]][-1]
+    a = acf(s, lag.max = lag.max, plot = FALSE, type = "covariance", demean = FALSE)
+    # Scale it into counts
+    length(s) * a[["acf"]][-1]
 }
 
 
